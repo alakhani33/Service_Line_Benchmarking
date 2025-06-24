@@ -42,7 +42,7 @@ def load_excel_data():
     df5 = pd.read_csv("Mapped_DRG_Service_Lines.csv")
 
     # Example: load your data
-    df_jobs = pd.read_csv("kaiser_sutter_jobs.csv")
+    df_jobs = pd.read_csv("kaiser_jobs_revalidated.csv")
 
     
     combined_df = pd.concat([df1, df2, df3], ignore_index=True)
@@ -585,25 +585,8 @@ st.plotly_chart(fig, use_container_width=True)
 import pandas as pd
 import plotly.express as px
 
-# 👇 Multiselect for Facility
-facility_options = sorted(df_jobs["Facility"].dropna().unique())
-default_facilities = [f for f in facility_options if "Kaiser Permanente" in f]
-
-selected_facilities = st.multiselect(
-    "Select Facility",
-    options=facility_options,
-    default=default_facilities if default_facilities else [facility_options[0]]
-)
-
-# 👇 Filter df_jobs based on selected facilities
-filtered_jobs = df_jobs[df_jobs["Facility"].isin(selected_facilities)]
-
 # Group by Title + Location + lat/lon to get counts
-df_grouped = (
-    filtered_jobs.groupby(["Title", "Location", "lat", "lon"])
-    .size()
-    .reset_index(name="Count")
-)
+df_grouped = df_jobs.groupby(["Title", "Location", "lat", "lon"]).size().reset_index(name="Count")
 
 # Create geo scatter plot
 fig = px.scatter_geo(
@@ -614,25 +597,28 @@ fig = px.scatter_geo(
     size="Count",
     hover_name="Title",
     hover_data={"Location": True, "Count": True, "lat": False, "lon": False},
-    scope="usa",
-    title="📍 2025 Hiring Locations by Job Title",
+    scope="usa",  # 👈 Limit map to USA only
+    title="📍 Hiring Locations (Kaiser) by Job Title",
 )
 
 fig.update_layout(
-    height=1000,
-    width=1600,
-    margin=dict(l=0, r=0, t=40, b=160),
+    height=1000,        # Increased height
+    width=1600,        # Increased width (breadth)
+    margin=dict(l=0, r=0, t=40, b=160),  # Reserve bottom space for legend
     legend=dict(
         orientation="h",
         x=0.5,
-        y=-0.25,
+        y=-0.25,            # Keep legend well below the map
         xanchor="center",
         yanchor="top"
     ),
-    showlegend=False  # optional
+    showlegend=False  # 👈 this disables the legend
 )
 
-fig.update_traces(marker=dict(sizemode="area", sizeref=2. * df_grouped["Count"].max() / (40. ** 2)))
+# Optional: refine bubble size scaling
+fig.update_traces(marker=dict(sizemode="area", sizeref=2.*df_grouped["Count"].max()/(40.**2)))
+
+# fig.show()
 
 st.plotly_chart(fig, use_container_width=True)
 
