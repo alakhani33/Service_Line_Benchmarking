@@ -581,6 +581,7 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 ###############################
+st.subheader("📊 Open Positions")
 
 import pandas as pd
 import plotly.express as px
