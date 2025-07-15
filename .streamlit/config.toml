@@ -1,4 +1,9 @@
 [server]
+headless = true
 enableCORS = false
 enableXsrfProtection = false
-baseUrlPath = "healthcare/SLB24"
+baseUrlPath = "healthcare/SLB24"  # Adjust per app
+
+[browser]
+serverAddress = "localhost"
+gatherUsageStats = false
