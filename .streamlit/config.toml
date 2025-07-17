@@ -2,8 +2,10 @@
 headless = true
 enableCORS = false
 enableXsrfProtection = false
-baseUrlPath = "healthcare/SLB24"  # Adjust per app
+baseUrlPath = "healthcare/SLB24"
+port = 5000
+address = "0.0.0.0"
 
 [browser]
-serverAddress = "localhost"
+serverAddress = "caliber360ai.com"
 gatherUsageStats = false
